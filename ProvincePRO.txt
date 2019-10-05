@@ -1,0 +1,41 @@
+create or replace PACKAGE BODY adminProvince  AS
+PROCEDURE insertProvince(pnID_Province number, pvName VARCHAR2) IS
+BEGIN
+    INSERT INTO PROVINCE( ID_Province , Name )
+    VALUES ( pnID_Province , pvName  );
+    COMMIT;
+    EXCEPTION
+      when dup_val_on_index
+	  DBMS_OUTPUT.PUT_LINE ('Error ya existe un archivo con este nombre');
+      WHEN OTHERS THEN
+          DBMS_OUTPUT.PUT_LINE ('Unexpected error');
+END insertProvince;
+
+PROCEDURE removeProvince(pnID_Province number)IS
+BEGIN
+    DELETE From Province
+    WHERE id_Province = pnID_Province;
+    COMMIT;
+    EXCEPTION
+      WHEN OTHERS THEN
+          DBMS_OUTPUT.PUT_LINE ('Unexpected error');
+END removeProvince;
+
+PROCEDURE updateProvince(pnID_Province number, pvName VARCHAR2) IS
+BEGIN
+    UPDATE Province
+    set Name = pvName
+    where NOT EXISTS (SELECT * FROM Province e
+    WHERE e.name  = pvName) and  Province.id_province  = pnID_Province;
+    commit;
+    EXCEPTION
+      when too_many_rows then
+        dbms_output.put_line('Se encontraron varias tuplas con la informacion ingresada');
+      when no_data_found then
+        dbms_output.put_line('NO se encontraron tuplas con la informacion ingresada');
+      when dub_val
+      when others then
+        dbms_output.put_line('ERROR');
+END updateProvince;
+
+END adminProvince;

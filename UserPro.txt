@@ -1,0 +1,42 @@
+create or replace PACKAGE BODY             adminUser  AS
+PROCEDURE insertUser(pnUserName varchar2, pvIdentification VARCHAR2,pvId_User_type number, pv_id_favorite number, pvPassword varchar2) IS
+BEGIN
+    INSERT INTO usuario( username , identification , id_user_type , id_favorite , password)
+    VALUES ( pnUserName, pvIdentification , pvId_User_type ,pv_id_favorite , pvPassword);
+    COMMIT;
+    EXCEPTION
+      when dup_val_on_index
+	  DBMS_OUTPUT.PUT_LINE ('Error ya existe un archivo con este nombre'); 
+      WHEN OTHERS THEN
+          DBMS_OUTPUT.PUT_LINE ('Unexpected error');
+END insertUser;
+
+PROCEDURE removeUser(pnUserName VARCHAR2, pvIdentification VARCHAR2)IS
+BEGIN
+    DELETE From usuario
+    WHERE username = pnUserName;
+    COMMIT;
+    EXCEPTION
+      WHEN OTHERS THEN
+          DBMS_OUTPUT.PUT_LINE ('Unexpected error');
+END removeUser;
+
+PROCEDURE updateUser(pnUserName VARCHAR2, pvIdentification VARCHAR2, pvPassword varchar2) IS
+    e_User_Already_Exist EXCEPTION;
+    BEGIN
+        IF SQL%NOTFOUND then
+            UPDATE usuario
+            SET username = pnUserName
+            where identification =  pvIdentification;
+            COMMIT;
+        ELSE
+            raise e_User_Already_Exist;
+    END IF;
+    EXCEPTION
+        when e_User_Already_Exist then
+            dbms_output.put_line('ERROR,Usuario no disponible , Este usuario ya esta ocupado');
+        when others then
+            dbms_output.put_line('ERROR');
+END updateUser;
+
+END adminUser;

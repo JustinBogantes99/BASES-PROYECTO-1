@@ -1,0 +1,45 @@
+create or replace PACKAGE adminCountry IS
+PROCEDURE insertCountry(pnID_country number, pvName VARCHAR2);
+PROCEDURE removeCountry(pnID_country number);
+PROCEDURE updateCountry(pnID_country number, pvName VARCHAR2);
+END adminCountry;
+
+create or replace PACKAGE BODY adminCountry  AS
+PROCEDURE insertCountry(pnID_country number, pvName VARCHAR2) IS
+BEGIN
+    INSERT INTO COUNTRY( ID_country , Name )
+    VALUES ( pnID_country , pvName  );
+    COMMIT;
+    EXCEPTION
+      when dup_val_on_index
+	  DBMS_OUTPUT.PUT_LINE ('Error ya existe un archivo con este nombre');
+      WHEN OTHERS THEN
+          DBMS_OUTPUT.PUT_LINE ('Unexpected error');
+END insertCountry;
+
+PROCEDURE removeCountry(pnID_country number)IS
+BEGIN
+    DELETE From country
+    WHERE id_country = pnID_country;
+    COMMIT;
+    EXCEPTION
+      WHEN OTHERS THEN
+          DBMS_OUTPUT.PUT_LINE ('Unexpected error');
+END removeCountry;
+
+PROCEDURE updateCountry(pnID_country number, pvName VARCHAR2) IS
+BEGIN
+    UPDATE Country
+    set Name = pvName
+    where id_country = pnID_country;
+    commit;
+    EXCEPTION
+      when too_many_rows then
+        dbms_output.put_line('Se encontraron varias tuplas con la informacion ingresada');
+      when no_data_found then
+        dbms_output.put_line('NO se encontraron tuplas con la informacion ingresada');
+      when others then
+        dbms_output.put_line('ERROR');
+END updateCountry;
+
+END adminCountry;

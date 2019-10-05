@@ -1,0 +1,40 @@
+create or replace PACKAGE BODY adminComunity  AS
+PROCEDURE insertComunity(pnID_Comunity number, pvName VARCHAR2) IS
+BEGIN
+    INSERT INTO Comunity( ID_Comunity , Name )
+    VALUES ( pnID_Comunity , pvName  );
+    COMMIT;
+    EXCEPTION
+      when dup_val_on_index
+	  DBMS_OUTPUT.PUT_LINE ('Error ya existe un archivo con este nombre');
+      WHEN OTHERS THEN
+          DBMS_OUTPUT.PUT_LINE ('Unexpected error');
+END insertComunity;
+
+PROCEDURE removeComunity(pnID_Comunity number)IS
+BEGIN
+    DELETE From Comunity
+    WHERE id_Comunity = pnID_Comunity;
+    COMMIT;
+    EXCEPTION
+      WHEN OTHERS THEN
+          DBMS_OUTPUT.PUT_LINE ('Unexpected error');
+END removeComunity;
+
+PROCEDURE updateComunity(pnID_Comunity number, pvName VARCHAR2) IS
+BEGIN
+    UPDATE Comunity
+    set Name = pvName
+    where NOT EXISTS (SELECT * FROM Comunity e
+    WHERE e.name  = pvName) and  Comunity.id_Comunity  = pnID_Comunity;
+    commit;
+    EXCEPTION
+      when too_many_rows then
+        dbms_output.put_line('Se encontraron varias tuplas con la informacion ingresada');
+      when no_data_found then
+        dbms_output.put_line('NO se encontraron tuplas con la informacion ingresada');
+      when others then
+        dbms_output.put_line('ERROR');
+END updateComunity;
+
+END adminComunity;
